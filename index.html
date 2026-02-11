@@ -79,7 +79,7 @@
 
     <div class="info-text">
         ※BSA: DuBois式 / 酸素含量係数: 1.34を使用<br>
-        ※DO₂i 300達成に必要なHb = 300 / (CI × 1.34 × SaO₂ × 10)
+        ※DO₂/VO₂ 3:1達成に必要なHb = (3 × Hb × (SaO₂ - SvO₂)) / SaO₂
     </div>
 </div>
 
@@ -131,14 +131,13 @@ function uiCalculate() {
         html += `<div class="card active">${content}</div>`;
     }
 
-    // 4. 必要Hb (BSA, Flow, SaO2があれば計算)
-    if (bsa && !isNaN(co) && !isNaN(sao2)) {
-        const ci = co / bsa;
-        const reqHb = 300 / (ci * 1.34 * sao2 * 10);
+    // 4. 必要Hb (現在のVO2に対し比率3:1を達成するために必要なHbを計算)
+    if (!isNaN(hb) && !isNaN(sao2) && !isNaN(svo2)) {
+        const reqHb = (3 * hb * (sao2 - svo2)) / sao2;
         html += `
             <div class="card important">
                 <div class="res-row" style="border:none;">
-                    <span class="res-label">DO₂i 300維持に必要なHb</span>
+                    <span class="res-label">DO₂/VO₂ 3:1維持に必要なHb</span>
                     <span class="res-val" style="color:var(--danger)">${reqHb.toFixed(1)}<span class="res-unit">g/dL</span></span>
                 </div>
             </div>`;
