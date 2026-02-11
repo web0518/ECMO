@@ -3,294 +3,74 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ECMO/CPB 計算ツール (Mobile)</title>
+    <title>ECMO/CPB Calculator</title>
     <style>
-        /* スマートフォン向け基本設定 */
         :root {
-            --primary-color: #0056b3;
-            --accent-color: #d9534f;
-            --bg-color: #f4f7f9;
-            --card-bg: #ffffff;
+            --primary: #0056b3;
+            --danger: #d9534f;
+            --success: #28a745;
+            --bg: #f8f9fa;
         }
-        * { box-sizing: border-box; touch-action: manipulation; }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            background-color: var(--bg-color);
-            margin: 0;
-            padding: 10px;
-            color: #333;
-            font-size: 16px; /* スマホで文字が小さくならないように */
-        }
-        .container {
-            max-width: 100%;
-            margin: 0 auto;
-            background: var(--card-bg);
-            padding: 15px;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-        h1 {
-            font-size: 1.2rem;
-            text-align: center;
-            margin-bottom: 20px;
-            color: var(--primary-color);
-            border-bottom: 2px solid #eee;
-            padding-bottom: 10px;
-        }
-
-        /* 入力フォームの縦並びデザイン */
-        .input-group {
-            margin-bottom: 15px;
-        }
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: 600;
-            font-size: 0.9rem;
-            color: #555;
-        }
-        .input-wrapper {
-            position: relative;
-            display: flex;
-            align-items: center;
-        }
-        input[type="number"] {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            font-size: 1.1rem; /* タップしやすい大きさ */
-            appearance: none; /* ブラウザ標準のスタイルをリセット */
-        }
-        input:focus {
-            border-color: var(--primary-color);
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(0,86,179,0.1);
-        }
-        .unit {
-            position: absolute;
-            right: 15px;
-            color: #888;
-            font-size: 0.9rem;
-            pointer-events: none;
-        }
-
-        /* 計算ボタン */
-        .btn-calc {
-            width: 100%;
-            padding: 15px;
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 1.1rem;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-        .btn-calc:active {
-            background-color: #004494;
-            transform: translateY(2px);
-        }
-
-        /* 結果表示エリア */
-        .results {
-            margin-top: 25px;
-            border-top: 1px dashed #ccc;
-            padding-top: 15px;
-        }
-        .result-card {
-            background: #f8f9fa;
-            border-radius: 8px;
-            padding: 12px;
-            margin-bottom: 10px;
-            border-left: 5px solid #ccc; /* デフォルトはグレー */
-        }
-        /* データが入った時の色 */
-        .result-card.active { border-left-color: var(--primary-color); background: #eef6ff; }
-        .result-card.warning { border-left-color: var(--accent-color); background: #fff5f5; }
-
-        .row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 4px;
-        }
-        .label-text { font-size: 0.85rem; color: #666; }
-        .value-text { font-size: 1.2rem; font-weight: bold; color: #333; }
-        .sub-unit { font-size: 0.8rem; color: #666; font-weight: normal; }
+        * { box-sizing: border-box; font-family: sans-serif; }
+        body { background: var(--bg); margin: 0; padding: 10px; color: #333; }
+        .container { max-width: 100%; margin: 0 auto; background: white; padding: 15px; border-radius: 12px; shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h1 { font-size: 1.1rem; text-align: center; color: var(--primary); margin-bottom: 15px; border-bottom: 1px solid #ddd; padding-bottom: 10px; }
         
-        .empty-msg { font-size: 0.8rem; color: #aaa; text-align: center; }
+        .input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+        .input-group { display: flex; flex-direction: column; }
+        label { font-size: 0.75rem; font-weight: bold; margin-bottom: 3px; color: #666; }
+        .input-wrap { position: relative; display: flex; align-items: center; }
+        input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 1rem; }
+        .unit { position: absolute; right: 8px; font-size: 0.7rem; color: #999; }
+
+        button { width: 100%; padding: 14px; background: var(--primary); color: white; border: none; border-radius: 8px; font-size: 1rem; font-weight: bold; margin-top: 5px; }
+        
+        .results { margin-top: 20px; }
+        .card { background: #f1f3f5; border-radius: 8px; padding: 12px; margin-bottom: 10px; border-left: 4px solid #ced4da; }
+        .card.active { border-left-color: var(--primary); }
+        .card.important { border-left-color: var(--danger); background: #fff5f5; }
+        
+        .res-row { display: flex; justify-content: space-between; margin-bottom: 5px; border-bottom: 1px solid #e9ecef; padding-bottom: 2px; }
+        .res-label { font-size: 0.8rem; color: #555; }
+        .res-val { font-weight: bold; font-size: 1rem; }
+        .res-unit { font-size: 0.7rem; font-weight: normal; color: #777; margin-left: 3px; }
+        
+        .warning-text { color: var(--danger); }
+        .info-text { font-size: 0.7rem; color: #888; margin-top: 10px; line-height: 1.3; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>ECMO・循環管理 計算</h1>
+    <h1>ECMO/体外循環 管理計算</h1>
 
-    <div class="input-group">
-        <label>身長 (Height)</label>
-        <div class="input-wrapper">
-            <input type="number" id="height" placeholder="170" inputmode="decimal">
-            <span class="unit">cm</span>
+    <div class="input-grid">
+        <div class="input-group">
+            <label>身長 (cm)</label>
+            <div class="input-wrap"><input type="number" id="h" placeholder="170" inputmode="decimal"><span class="unit">cm</span></div>
+        </div>
+        <div class="input-group">
+            <label>体重 (kg)</label>
+            <div class="input-wrap"><input type="number" id="w" placeholder="60" inputmode="decimal"><span class="unit">kg</span></div>
+        </div>
+        <div class="input-group">
+            <label>送血流量 (Flow)</label>
+            <div class="input-wrap"><input type="number" id="co" placeholder="4.0" inputmode="decimal"><span class="unit">L/m</span></div>
+        </div>
+        <div class="input-group">
+            <label>Hb値</label>
+            <div class="input-wrap"><input type="number" id="hb" placeholder="10.0" inputmode="decimal"><span class="unit">g/dL</span></div>
+        </div>
+        <div class="input-group">
+            <label>SaO₂ (%)</label>
+            <div class="input-wrap"><input type="number" id="sao2" value="100" inputmode="decimal"><span class="unit">%</span></div>
+        </div>
+        <div class="input-group">
+            <label>SvO₂ (%)</label>
+            <div class="input-wrap"><input type="number" id="svo2" value="75" inputmode="decimal"><span class="unit">%</span></div>
         </div>
     </div>
 
-    <div class="input-group">
-        <label>体重 (Weight)</label>
-        <div class="input-wrapper">
-            <input type="number" id="weight" placeholder="60" inputmode="decimal">
-            <span class="unit">kg</span>
-        </div>
-    </div>
+    <button onclick="uiCalculate()">計算実行</button>
 
-    <div class="input-group">
-        <label>送血流量 (Flow)</label>
-        <div class="input-wrapper">
-            <input type="number" id="co" placeholder="4.0" inputmode="decimal">
-            <span class="unit">L/min</span>
-        </div>
-    </div>
-
-    <div class="input-group">
-        <label>ヘモグロビン (Hb)</label>
-        <div class="input-wrapper">
-            <input type="number" id="hb" placeholder="10.0" inputmode="decimal">
-            <span class="unit">g/dL</span>
-        </div>
-    </div>
-
-    <div class="input-group">
-        <label>動脈血酸素飽和度 (SaO₂)</label>
-        <div class="input-wrapper">
-            <input type="number" id="sao2" value="100" inputmode="decimal">
-            <span class="unit">%</span>
-        </div>
-    </div>
-
-    <div class="input-group">
-        <label>静脈血酸素飽和度 (SvO₂)</label>
-        <div class="input-wrapper">
-            <input type="number" id="svo2" value="75" inputmode="decimal">
-            <span class="unit">%</span>
-        </div>
-    </div>
-
-    <button class="btn-calc" onclick="calculate()">計算 (Calculate)</button>
-
-    <div class="results" id="result-area">
-        <p class="empty-msg">数値を入力して計算ボタンを押してください</p>
-    </div>
-</div>
-
-<script>
-function calculate() {
-    // 値の取得 (未入力はNaNになる)
-    const h = parseFloat(document.getElementById('height').value);
-    const w = parseFloat(document.getElementById('weight').value);
-    const co = parseFloat(document.getElementById('co').value);
-    const hb = parseFloat(document.getElementById('hb').value);
-    const sao2Val = parseFloat(document.getElementById('sao2').value);
-    const svo2Val = parseFloat(document.getElementById('svo2').value);
-
-    // ％を小数に変換
-    const sao2 = !isNaN(sao2Val) ? sao2Val / 100 : NaN;
-    const svo2 = !isNaN(svo2Val) ? svo2Val / 100 : NaN;
-
-    let html = "";
-
-    // 1. 体格・BSA関連
-    if (!isNaN(h) && !isNaN(w)) {
-        const bsa = 0.007184 * Math.pow(h, 0.725) * Math.pow(w, 0.425);
-        const targetFlow = bsa * 2.4; // CI 2.4基準
-
-        html += createCard("体格・目標流量", [
-            { label: "体表面積 (BSA)", value: bsa.toFixed(2), unit: "m²" },
-            { label: "目標流量 (CI 2.4時)", value: targetFlow.toFixed(2), unit: "L/min", highlight: true }
-        ], "active");
-
-        // 2. CI (BSAとCOが必要)
-        if (!isNaN(co)) {
-            const ci = co / bsa;
-            let statusClass = (ci < 2.2) ? "warning" : "active";
-            html += createCard("現在の心係数", [
-                { label: "CI", value: ci.toFixed(2), unit: "L/min/m²", highlight: true }
-            ], statusClass);
-        }
-
-    } else if (!isNaN(co)) {
-        // BSAが出せないがCOだけある場合
-        html += createCard("現在の流量", [
-            { label: "Flow", value: co.toFixed(1), unit: "L/min" },
-            { label: "CI", value: "BSA不明", unit: "" }
-        ], "");
-    }
-
-    // 3. 酸素需給バランス
-    // DO2計算 (CO, Hb, SaO2が必要)
-    if (!isNaN(co) && !isNaN(hb) && !isNaN(sao2)) {
-        const do2 = co * (hb * 1.34 * sao2) * 10;
-        let rows = [
-            { label: "酸素供給 (DO₂)", value: Math.round(do2), unit: "mL/min" }
-        ];
-
-        // VO2計算 (SvO2も必要)
-        if (!isNaN(svo2)) {
-            const vo2 = co * (hb * 1.34 * (sao2 - svo2)) * 10;
-            const ratio = do2 / vo2;
-            
-            rows.push({ label: "酸素消費 (VO₂)", value: Math.round(vo2), unit: "mL/min" });
-            rows.push({ label: "DO₂ / VO₂ 比", value: ratio.toFixed(1), unit: "", highlight: true });
-        } else {
-            rows.push({ label: "酸素消費 (VO₂)", value: "-", unit: "SvO₂不明" });
-        }
-        
-        html += createCard("酸素バランス", rows, "active");
-    }
-
-    // 4. 必要Hb逆算 (BSA, CO, SaO2が必要)
-    // DO2 Index = 300 を維持するためのHb
-    if (!isNaN(h) && !isNaN(w) && !isNaN(co) && !isNaN(sao2)) {
-        const bsa = 0.007184 * Math.pow(h, 0.725) * Math.pow(w, 0.425);
-        // Formula: Hb = 300 / (CI * 1.34 * SaO2 * 10) ... CI = CO/BSA
-        // Hb = (300 * BSA) / (CO * 1.34 * SaO2 * 10)
-        
-        const reqHb = (300 * bsa) / (co * 1.34 * sao2 * 10);
-        
-        html += createCard("推奨値 (DO₂i=300維持)", [
-            { label: "必要 Hb値", value: reqHb.toFixed(1), unit: "g/dL", highlight: true }
-        ], "warning");
-    }
-
-    // 結果の流し込み
-    const resultArea = document.getElementById('result-area');
-    if (html === "") {
-        resultArea.innerHTML = '<p class="empty-msg">必要な項目（身長・体重など）を入力してください</p>';
-    } else {
-        resultArea.innerHTML = html;
-    }
-}
-
-// カード生成ヘルパー関数
-function createCard(title, items, type) {
-    let itemHtml = items.map(item => `
-        <div class="row">
-            <span class="label-text">${item.label}</span>
-            <span class="value-text" style="${item.highlight ? 'color:#d9534f;' : ''}">
-                ${item.value} <span class="sub-unit">${item.unit}</span>
-            </span>
-        </div>
-    `).join('');
-
-    return `
-        <div class="result-card ${type}">
-            <div style="font-size:0.8rem; font-weight:bold; margin-bottom:5px; color:#555;">${title}</div>
-            ${itemHtml}
-        </div>
-    `;
-}
-</script>
-
-</body>
-</html>
+    <div id="res
